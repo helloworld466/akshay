@@ -1,11 +1,6 @@
 pipeline{
     agent any
     stages{	
-    		stage(){
-		steps{
-		sh label: '', script: 'mvn clean package'
-		}
-		}
 		stage('Sonarqube Analysis'){
             steps{
                 script{
@@ -23,6 +18,11 @@ pipeline{
                     waitForQualityGate abortPipeline: false, credentialsId:'sonarqube-jenkins'
                 }
             }
+		}
+		stage('maven build'){
+		steps{
+		sh label: '', script: 'mvn clean package'
+		}
 		}
         stage('Result'){
             steps{
