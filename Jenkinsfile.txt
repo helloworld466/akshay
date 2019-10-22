@@ -21,10 +21,9 @@ pipeline{
             }
 		}
        
-		stage('Java Build'){
+		stage('War creation'){
             steps{
-                sh label: '', script: '''javac Abcd.java
-                java Abcd'''
+                sh label: '', script: 'mvn clean package'
             }
 		}
 		
