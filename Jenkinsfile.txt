@@ -1,10 +1,49 @@
 pipeline{
-  agent any
-  stages{
-    stage('build'){
-    steps{
-     sh label: '', script: 'mvn clean package'
+    agent any
+    stages{
+	
+		stage('Sonarqube Analysis'){
+            steps{
+                script{
+                    scannerHome = tool 'sonarqube'
+                }
+                withSonarQubeEnv('sonarqube'){
+                    sh '/var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/sonarqube/bin/sonar-scanner'
+                }
+            }
+		}
+	
+		stage("Quality Gate"){
+			steps{
+                timeout(time: 5, unit: 'MINUTES'){
+                    waitForQualityGate abortPipeline: false, credentialsId:'sonarqube-jenkins'
+                }
+            }
+		}
+       
+		stage('Java Build'){
+            steps{
+                sh label: '', script: '''javac Abcd.java
+                java Abcd'''
+            }
+		}
+		
+		stage('Nexus Repository'){
+			steps{
+					nexusArtifactUploader artifacts: [[artifactId: 'hello', classifier: 'upload', file: '/usr/lib/jenkins/jenkins.war', type: 'war']], credentialsId: 'admin', groupId: 'com.project', nexusUrl: '172.24.125.116:8889/', nexusVersion: 'nexus3', protocol: 'http', repository: 'JAVA', version: '1.2'
+					}
+		}
+		
+		stage('Ansible'){
+			steps{
+					sh label: '', script: 'sudo ssh -o StrictHostKeyChecking=no root@172.24.199.68 \'sudo ansible-playbook /etc/ansible/ansible.yml\''
+			}
+		}
+		
+        stage('Result'){
+            steps{
+                echo 'Successfully Completed'
+            }
+        }
     }
-    }
-  }
 }
