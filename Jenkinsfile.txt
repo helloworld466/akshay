@@ -1,13 +1,18 @@
 pipeline{
     agent any
-    stages{
+    stages{	
+    		stage(){
+		steps{
+		sh label: '', script: 'mvn clean package'
+		}
+		}
 		stage('Sonarqube Analysis'){
             steps{
                 script{
                     scannerHome = tool 'sonarqube'
                 }
                 withSonarQubeEnv('sonarqube'){
-					sh label: '', script: 'mvn clean package sonar:sonar'
+                    sh '/var/lib/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/sonarqube/bin/sonar-scanner'
                 }
             }
 		}
@@ -19,15 +24,6 @@ pipeline{
                 }
             }
 		}
-       
-		stage('War creation'){
-            steps{
-                sh label: '', script: 'mvn clean package'
-            }
-		}
-		
-
-		
         stage('Result'){
             steps{
                 echo 'Successfully Completed'
