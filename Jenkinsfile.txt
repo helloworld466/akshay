@@ -30,7 +30,7 @@ pipeline{
 		
 		stage('Nexus Repository'){
 			steps{
-					nexusArtifactUploader artifacts: [[artifactId: 'hello', classifier: 'upload', file: '/usr/lib/jenkins/jenkins.war', type: 'war']], credentialsId: 'admin', groupId: 'com.project', nexusUrl: '172.24.125.116:8889/', nexusVersion: 'nexus3', protocol: 'http', repository: 'JAVA', version: '1.2'
+					nexusArtifactUploader artifacts: [[artifactId: 'hello', classifier: 'upload', file: '/usr/lib/jenkins/jenkins.war', type: 'war']], credentialsId: 'admin', groupId: 'com.project', nexusUrl: 'ip:8889/', nexusVersion: 'nexus3', protocol: 'http', repository: 'JAVA', version: '1.2'
 			}
 			steps{
 				echo 'Successfully pushed'
@@ -39,7 +39,7 @@ pipeline{
 		
 		stage('Ansible'){
 			steps{
-					sh label: '', script: 'sudo ssh -o StrictHostKeyChecking=no root@172.24.199.68 \'sudo ansible-playbook /etc/ansible/ansible.yml\''
+					sh label: '', script: 'sudo ssh -o StrictHostKeyChecking=no root@ip \'sudo ansible-playbook /etc/ansible/ansible.yml\''
 			}
 			steps{
 				echo 'Successfully pushed'
